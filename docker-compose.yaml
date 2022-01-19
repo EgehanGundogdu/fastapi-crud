@@ -8,3 +8,17 @@ services:
       - ./src/:/usr/src/app/
     ports:
       - "3000:3000"
+    environment:
+      - SQLALCHEMY_DATABASE_URL=postgresql://postgres:password@database/fast_api
+    depends_on:
+      - database
+  database:
+    image: postgres:alpine
+    environment:
+      - POSTGRES_DB=fast_api
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    
+
+volumes:
+    pg_data:
