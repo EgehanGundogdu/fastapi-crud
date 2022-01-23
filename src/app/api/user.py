@@ -28,7 +28,7 @@ def user_list(
 )
 def user_create(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
-    if crud.user.get_user_by_email(db, user) is not None:
+    if crud.user.get_user_by_email(db, user.email) is not None:
         raise exceptions.HTTPException(
             status.HTTP_400_BAD_REQUEST,
             detail={"message": "This email is already registered."},
