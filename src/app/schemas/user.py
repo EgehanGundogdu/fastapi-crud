@@ -23,5 +23,7 @@ class UserCreate(UserBase):
     is_active : Optional[bool]
 
 
-class UserUpdate(UserCreate):
+class UserUpdate(UserBase):
     password: Optional[str]
+    is_active : Optional[bool]
+    email: Optional[EmailStr]
