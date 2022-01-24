@@ -1,8 +1,11 @@
-
 from fastapi import APIRouter, Depends, exceptions, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from app.core.dependecies import get_db
+
 from app import crud, schemas
+from app.core.dependecies import get_current_user, get_db
+from app.core.security import authenticate, create_access_token
+from app.models import User
 
 router = APIRouter()
 
@@ -81,3 +84,27 @@ def update_user_with_patch(
             status.HTTP_404_NOT_FOUND, detail={"message": "User not found."}
         )
     return crud.user.update(db, user, update_schema)
+
+
+@router.post("/token", response_model=schemas.AccessTokenResponse)
+def login(
+    db: Session = Depends(get_db), login_form: OAuth2PasswordRequestForm = Depends()
+):
+    user = crud.user.get_user_by_email(db, login_form.username)
+    if user is None:
+        raise exceptions.HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unable to login with given credentials.",
+        )
+
+    user = authenticate(user, login_form)
+
+    token_response = create_access_token(user)
+    return token_response
+
+
+@router.get(
+    "/users/me", response_model=schemas.UserOutDB, status_code=status.HTTP_200_OK
+)
+def current_user(current_user: User = Depends(get_current_user)):
+    return current_user
