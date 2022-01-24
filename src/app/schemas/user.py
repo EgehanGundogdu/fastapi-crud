@@ -27,3 +27,8 @@ class UserUpdate(UserBase):
     password: Optional[str]
     is_active : Optional[bool]
     email: Optional[EmailStr]
+
+
+class AccessTokenResponse(BaseModel):
+    access_token : str
+    token_type : str
